@@ -1,4 +1,5 @@
 FROM node:12.2.0-alpine
+ARG PORT
 
 WORKDIR /usr/src/app
 
