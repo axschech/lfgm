@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "express": "^4.17.0",
     "mysql2": "^1.6.5",
     "sequelize": "^5.8.6"
