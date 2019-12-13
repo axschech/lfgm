@@ -1,12 +1,12 @@
 import Sequelize from 'sequelize';
-console.log(process.env)
+
 const conn = new Sequelize(process.env.MYSQL_DATABASE, 'root', process.env.MYSQL_ROOT_PASSWORD, {
     host: process.env.DB_HOST,
-    dialect: 'mysql'
+    dialect: 'mysql',
+    logging:false
 });
-conn.authenticate().then((test) => {
-    console.log(test)
-}).catch((err) => {
-    console.log(err, 'err');
-})
+conn.authenticate().catch(() => {
+    console.log("auth failed");
+});
+
 export default conn;

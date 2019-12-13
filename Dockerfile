@@ -1,7 +1,8 @@
 FROM node:12.2.0-alpine
-RUN apk --no-cache add --virtual native-deps \
-  g++ gcc libgcc libstdc++ linux-headers autoconf automake make nasm python git && \
-  npm install --quiet node-gyp -g
+RUN apk update
+RUN apk add --virtual native-deps \
+  ca-certificates g++ gcc libgcc libstdc++ linux-headers autoconf automake make nasm python git && \
+  npm install node-gyp -g
 
 ARG PORT
 ARG MYSQL_ROOT_PASSWORD

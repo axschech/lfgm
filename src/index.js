@@ -1,4 +1,7 @@
+import {} from 'dotenv/config';
+
 import express from 'express';
+import path from 'path';
 
 import { DefaultUserFactory } from './database/repositories/user';
 import conn from './database/connection';
@@ -17,16 +20,23 @@ const app = express(),
     userRepository = DefaultUserFactory(),
     defaultErrorResponse = new Response('', 'BadRequest');
 
+app.use(express.json());
+app.use('/static', express.static(path.join(__dirname + '/../public')))
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
+
+app.get('/status', (req, res) => {
+    res.send('OK')
 })
 
-app.get('/register', (req, res) => {
+app.post('/register', (req, res) => {
     let errResponse;
-
-    userRepository.register(req.query)
+    
+    userRepository.register(req.body)
         .then(() => res.send('You did it!'))
         .catch((errs) => {
+            console.log(errs);
             res.statusCode = 400;
             if (errs.errors.filter(err => {
                 return err.validatorKey === 'isEmail'
@@ -40,8 +50,7 @@ app.get('/register', (req, res) => {
         })
 })
 
-app.get('/login', (req, res) => {
-    console.log(req.query);
+app.post('/login', (req, res) => {
     userRepository.login(req.query).then(() => {
         res.send('logged in');
     }).catch(() => {
@@ -49,10 +58,15 @@ app.get('/login', (req, res) => {
     })
 })
 
-conn.sync().then(() => {
-    app.listen(9001, () => {
-        console.log(`app listening on port ${port}!`)
+app.listen(port, () => {
+    start_db();
+})
+
+function start_db() {
+    return conn.sync().then(() => {
+        console.log('listening on ' + port)
+    }).catch(err => {
+        console.log('retry')
+        setTimeout(init, 10000);
     })
-}).catch((err) => {
-    console.log(err)
-});
+}
