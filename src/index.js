@@ -65,8 +65,8 @@ app.listen(port, () => {
 function start_db() {
     return conn.sync().then(() => {
         console.log('listening on ' + port)
-    }).catch(err => {
-        console.log('retry')
-        setTimeout(init, 10000);
+    }).catch(() => {
+        console.log('retrying')
+        setTimeout(start_db, 10000);
     })
 }
