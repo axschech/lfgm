@@ -9,8 +9,6 @@ ARG MYSQL_ROOT_PASSWORD
 ARG MYSQL_DATABASE
 ARG DB_HOST
 
-WORKDIR /usr/src/app
-
 COPY package*.json ./
 RUN npm install
 

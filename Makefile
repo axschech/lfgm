@@ -5,7 +5,7 @@ build:
 up:
 	docker-compose up -d
 logs:
-	docker logs -f $(service)$(container)
+	docker-compose logs -f $(service)
 stop:
 	docker-compose stop
 down:

@@ -21,9 +21,9 @@ const app = express(),
     defaultErrorResponse = new Response('', 'BadRequest');
 
 app.use(express.json());
-app.use('/static', express.static(path.join(__dirname + '/../public')))
+app.use('/static', express.static('/public'))
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.sendFile('/public/index.html');
 });
 
 app.get('/status', (req, res) => {
