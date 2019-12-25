@@ -23,7 +23,7 @@ const app = express(),
 app.use(express.json());
 app.use('/static', express.static('/public'))
 app.get('/', (req, res) => {
-    res.sendFile('/public/index.html');
+    res.sendFile(path.resolve('../static/index.html'));
 });
 
 app.get('/status', (req, res) => {
@@ -36,7 +36,6 @@ app.post('/register', (req, res) => {
     userRepository.register(req.body)
         .then(() => res.send('You did it!'))
         .catch((errs) => {
-            console.log(errs);
             res.statusCode = 400;
             if (errs.errors.filter(err => {
                 return err.validatorKey === 'isEmail'
@@ -59,12 +58,13 @@ app.post('/login', (req, res) => {
 })
 
 app.listen(port, () => {
+    console.log('listening on ' + port)
     start_db();
 })
 
 function start_db() {
     return conn.sync().then(() => {
-        console.log('listening on ' + port)
+        console.log('made it')
     }).catch(() => {
         console.log('retrying')
         setTimeout(start_db, 10000);
