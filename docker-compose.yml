@@ -1,0 +1,29 @@
+version: "2"
+services:
+  db:
+    container_name: db-container
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+  app:
+    environment:
+      - MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD
+      - DB_HOST=db
+    build:
+      args:
+        PORT: ${PORT}
+      context: .
+    image: lfgm:latest
+    container_name: lfgm-container
+    ports:
+      - "9001:9001"
+    depends_on:
+      - db
