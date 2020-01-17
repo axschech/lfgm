@@ -3,6 +3,8 @@ import Sequelize from 'sequelize';
 import conn from '../connection.js';
 import bcrypt from 'bcrypt';
 
+import Session from './session';
+
 const User = conn.define('users', {
     // attributes
     user: {
@@ -38,5 +40,9 @@ const User = conn.define('users', {
         }
     ]
   });
+
+User.hasMany(Session, {
+    foreignKey: 'user_id'
+});
 
 export default User;

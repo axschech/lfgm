@@ -10,27 +10,31 @@ export class UserRepository {
         this.model = model;
     }
     
-    register(config) {
-        return this.model.create({
-            user: config.user,
-            email: config.email,
-            password: config.password
+    getUserById(id) {
+        return this.model.findByPk(id);
+    }
+
+    getUser(config) {
+        return this.model.findOne({
+            where: {
+                [Op.or]: config
+            }
         });
+    }
+
+    register(config) {
+        return this.model.create(config);
     }
     
     login(config) {
         let promise = new Promise((resolve, reject) => {
-            this.model.findOne({
-                where: {
-                    [Op.or]: [{user: config.user || null}, {email: config.email || null}]
-                }
-            }).then(user => {
+            this.getUser(config).then(user => {
                 if (user === null) {
                     reject();
                 }
                 bcrypt.compare(config.password, user.password, (err, res) => {
                     if (res) {
-                        resolve()
+                        resolve({id: user.id})
                         return;
                     }
                    reject();

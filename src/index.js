@@ -1,10 +1,18 @@
 import {} from 'dotenv/config';
 
 import express from 'express';
+import expressSession from 'express-session'
 import path from 'path';
+import bodyParser from 'body-parser'
+
 
 import { DefaultUserFactory } from './database/repositories/user';
 import conn from './database/connection';
+
+import  passport from 'passport';
+import {Strategy as JwtStrategy, ExtractJwt} from 'passport-jwt';
+
+import { Auth } from './auth';
 
 class Response {
     constructor(message, error) {
@@ -21,14 +29,54 @@ const app = express(),
     defaultErrorResponse = new Response('', 'BadRequest');
 
 app.use(express.json());
-app.use('/static', express.static('/public'))
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use('/static', express.static(path.resolve(__dirname + '/../public')))
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve('../static/index.html'));
+    res.sendFile(path.resolve(__dirname + '/../public/index.html'));
 });
+
+let auth = new Auth();
+
+let opts = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: auth.getSecret(),
+    passReqToCallback: true
+};
+
+passport.use(new JwtStrategy(opts, (req, token, done) => {
+    try {
+        return parseInt(
+            req.params.id, 
+            10
+        ) ===  token.id ? done(null, token.id) : done(false);
+    } catch (error) {
+        done(error);
+    }
+}))
 
 app.get('/status', (req, res) => {
     res.send('OK')
-})
+}) 
+
+
+app.post('/checkToken/:id',
+passport.authenticate('jwt', {
+    session: false
+}),
+(req, res) => {
+    res.send('ok');
+});
+
+app.get('/checkLogin/:id', 
+    passport.authenticate('local', {session: false}),
+    (req, res) => {
+    // console.log(req.params.id);
+    // userRepository.checkSession(req.params.id);
+    res.send('hey')
+});
 
 app.post('/register', (req, res) => {
     let errResponse;
@@ -50,8 +98,12 @@ app.post('/register', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-    userRepository.login(req.query).then(() => {
-        res.send('logged in');
+    userRepository.login(req.body).then((payload) => {
+        auth.set(payload.id).then(token => {
+            res.json({
+                
+            });
+        });
     }).catch(() => {
         res.send('incorrect username or password');
     })
@@ -70,3 +122,7 @@ function start_db() {
         setTimeout(start_db, 10000);
     })
 }
+process.on('SIGTERM', function() {
+    console.log('\ncaught SIGTERM, stopping gracefully');
+    process.exit(1);
+});
