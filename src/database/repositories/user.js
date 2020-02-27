@@ -18,7 +18,12 @@ export class UserRepository {
         return this.model.findOne({
             where: {
                 [Op.or]: config
-            }
+            },
+            attributes: [
+                'id',
+                'user',
+                'email'
+            ]
         });
     }
 
@@ -28,7 +33,7 @@ export class UserRepository {
     
     login(config) {
         let promise = new Promise((resolve, reject) => {
-            this.getUser(config).then(user => {
+            this.model.findByPk(config.id).then(user => {
                 if (user === null) {
                     reject();
                 }

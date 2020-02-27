@@ -62,21 +62,21 @@ app.get('/status', (req, res) => {
 }) 
 
 
-app.post('/checkToken/:id',
-passport.authenticate('jwt', {
-    session: false
-}),
-(req, res) => {
-    res.send('ok');
-});
+// app.post('/checkToken/:id',
+// passport.authenticate('jwt', {
+//     session: false
+// }),
+// (req, res) => {
+//     res.send('ok');
+// });
 
-app.get('/checkLogin/:id', 
-    passport.authenticate('local', {session: false}),
-    (req, res) => {
-    // console.log(req.params.id);
-    // userRepository.checkSession(req.params.id);
-    res.send('hey')
-});
+app.get('/user/:id',
+passport.authenticate('jwt', (err, user) => {
+    if (!user) { 
+       return res.json(defaultErrorResponse)
+    }
+    res.
+})(req, res));
 
 app.post('/register', (req, res) => {
     let errResponse;
