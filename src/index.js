@@ -48,10 +48,7 @@ let opts = {
 
 passport.use(new JwtStrategy(opts, (req, token, done) => {
     try {
-        return parseInt(
-            req.params.id, 
-            10
-        ) ===  token.id ? done(null, token.id) : done(false);
+        return +req.params.id === token.id ? done(null, token) : done(false);
     } catch (error) {
         done(error);
     }
@@ -70,13 +67,15 @@ app.get('/status', (req, res) => {
 //     res.send('ok');
 // });
 
-app.get('/user/:id',
-passport.authenticate('jwt', (err, user) => {
-    if (!user) { 
-       return res.json(defaultErrorResponse)
-    }
-    res.
-})(req, res));
+app.get('/user/:id', function(req, res, next) {
+    passport.authenticate('jwt', function(err, user, info) {
+      if (err) { return next(err); }
+      if (!user || !user.id || +user.id !== +req.params.id) { return res.json(defaultErrorResponse) }
+      res.json({
+          success: true
+      })
+    })(req, res, next);
+  });
 
 app.post('/register', (req, res) => {
     let errResponse;
@@ -100,9 +99,7 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
     userRepository.login(req.body).then((payload) => {
         auth.set(payload.id).then(token => {
-            res.json({
-                
-            });
+            res.json({token: token});
         });
     }).catch(() => {
         res.send('incorrect username or password');

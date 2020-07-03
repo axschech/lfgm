@@ -33,7 +33,7 @@ export class UserRepository {
     
     login(config) {
         let promise = new Promise((resolve, reject) => {
-            this.model.findByPk(config.id).then(user => {
+            this.model.findOne({where: {email: config.email}}).then(user => {
                 if (user === null) {
                     reject();
                 }

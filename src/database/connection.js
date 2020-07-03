@@ -5,6 +5,7 @@ const conn = new Sequelize(process.env.MYSQL_DATABASE, 'root', process.env.MYSQL
     dialect: 'mysql',
     logging:false
 });
+
 conn.authenticate().catch(() => {
     console.log("auth failed");
 });

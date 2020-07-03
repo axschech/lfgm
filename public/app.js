@@ -1,13 +1,20 @@
-function postData(url, d) {
+function data(url, d, type) {
+    type = type || 'POST'
+    
+    let payload = {
+        method: type,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token') || false
+        }
+    };
+
+    if (payload.method === "POST") {
+        payload.body = JSON.stringify(d);
+    }
+
     try {
-        return fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(d),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token') || false
-            }
-        })
+        return fetch(url, payload)
            
     } catch (error) {
         console.log(error, "error")
@@ -16,9 +23,12 @@ function postData(url, d) {
     
 }
 
+
+const parseToken = token => JSON.parse(atob(token.split('.')[1]))
+
 document.querySelector("#sign-up-form").addEventListener('submit', function(e) {
     e.preventDefault()
-    postData("http://localhost:9001/register", {
+    data("http://localhost:9001/register", {
         email: this[0].value,
         user: this[1].value,
         password: this[2].value
@@ -27,9 +37,13 @@ document.querySelector("#sign-up-form").addEventListener('submit', function(e) {
 
 document.querySelector("#token-check").addEventListener('click', function(e) {
     e.preventDefault();
-    postData(
-        'http://localhost:9001/checkToken/1', 
-        {}
+
+    const token = parseToken(localStorage.getItem('token'))
+
+    data(
+        'http://localhost:9001/user/' + token.id, 
+        {},
+        'GET'
     ).then(function (response) {
         return response.json();
     }).then(function (data) {
@@ -38,12 +52,13 @@ document.querySelector("#token-check").addEventListener('click', function(e) {
 })
 document.querySelector("#login-form").addEventListener('submit', function(e) {
     e.preventDefault();
-    postData("http://localhost:9001/login", {
+    data("http://localhost:9001/login", {
         email: this[0].value,
         password: this[1].value
     }).then(function (response) {
         return response.json();
     }).then(function (data) {
-        localStorage.setItem('token', data)
+        console.log(data)
+        localStorage.setItem('token', data.token)
     });
 });

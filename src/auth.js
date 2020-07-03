@@ -6,7 +6,7 @@ export class Auth {
     constructor() {
         this.secret =  process.env.HMAC_SECRET || false;
         if (!this.secret) {
-            console.err('\nmissing secret');
+            console.log('\nmissing secret');
             process.exit(1);
         }
     }
