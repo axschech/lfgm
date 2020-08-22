@@ -3,27 +3,53 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "bcrypt": "^3.0.7",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "mysql2": "^1.7.0",
-    "sequelize": "^5.21.2",
-    "braces": ">=2.3.1"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.6",
-    "babel-preset-env": "^1.7.0",
-    "nodemon": "^1.19.4"
-  },
   "scripts": {
-    "start": "nodemon --watch src src/index.js --exec babel-node --presets babel-preset-env",
+    "start": "node --inspect=5858 -r ts-node/register src/index.ts",
+    "start:watch": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir dist --presets babel-preset-env",
     "serve": "npm install && npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axschech/lfgm.git"
+  },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/axschech/lfgm/issues"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm start",
+    "ext": "ts"
+  },
+  "homepage": "https://github.com/axschech/lfgm#readme",
+  "dependencies": {
+    "@types/node": "^14.6.0",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.7.0",
+    "eslint-plugin-import": "^2.22.0",
+    "express": "^4.17.1",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.27.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.4",
+    "npm": "^6.14.8",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^9.0.0",
+    "typeorm": "^0.2.25",
+    "typescript": "^4.0.2"
+  }
 }
