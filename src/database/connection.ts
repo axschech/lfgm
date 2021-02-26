@@ -6,7 +6,7 @@ export const connection = createConnection({
     type: "mysql",
     synchronize: true,
     logging: true,
-    username: process.env.MYSQL_USER,
+    username: "root",
     password: process.env.MYSQL_ROOT_PASSWORD,
     database: process.env.MYSQL_DATABASE
 });

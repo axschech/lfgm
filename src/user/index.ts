@@ -9,83 +9,85 @@ interface UserRequest extends UserEntity {
 }
 
 export class User {
-    constructor(private res: Res, private params: UserRequest) { }
-
-    async getById() {
-        try {
-            const result = await DefaultUserRepository().getUserById(this.params.id);
-            if (result.length === 0) {
-                new ErrorResponse(this.res, 400).send()
-                return;
-            }
-            new Response(this.res, 200, '', {
-                user: {
-                    ...result[0]
-                }
-            }).send();
-        } catch (err) {
-            new ErrorResponse(this.res).send();
+    constructor(private res: Res, private params: UserRequest, private auth?: Auth) {
+        if (!auth) {
+            this.auth = new Auth();
         }
     }
 
-    private async verifyPassword(): Promise<boolean> {
+    async getById(): Promise<Response> {
+        try {
+            const result = await DefaultUserRepository().getUserById(this.params.id);
+            if (result.length === 0) {
+                return new ErrorResponse(this.res, 400)
+            }
+
+            return new Response(this.res, 200, '', {
+                user: {
+                    ...result[0]
+                }
+            });
+        } catch (err) {
+            return new ErrorResponse(this.res);
+        }
+    }
+
+    private async verifyPassword(): Promise<Response> {
         try {
             const result = await DefaultUserRepository().verifyPassword(this.params);
 
             if (!result) {
-                new ErrorResponse(this.res, 403, 'Username or password is incorrect').send();
-                return false;
+                throw new ErrorResponse(this.res, 403, 'Username or password is incorrect');
             }
         } catch (err) {
-            new ErrorResponse(this.res).send();
-            return false;
+            return new ErrorResponse(this.res, null, err);
         }
-        return true;
     }
 
-    private async createToken(): Promise<boolean> {
-        const auth = new Auth();
-
+    private async createToken(): Promise<Response> {
         try {
             const user = await DefaultUserRepository().getUser(this.params);
-            const authResult = await auth.sign(user.id)
-            new Response(this.res, 200, authResult.toString()).send();
-            return true;
+            const authResult = await this.auth.sign(user.id)
+            return new Response(this.res, 200, authResult.toString());
         } catch (err) {
-            new ErrorResponse(this.res).send();
-            return false;
+            return new ErrorResponse(this.res)
         }
     }
 
-    async login() {
-        return await this.verifyPassword() && await this.createToken();
+    async login(): Promise<Response> {
+        try {
+            await this.verifyPassword();
+            return await this.createToken();
+        } catch (err) {
+            return err
+        }
+
     }
 
-    async register() {
+    async register(): Promise<Response> {
         try {
             const result = await DefaultUserRepository().saveUser(this.params);
 
-            new Response(this.res, 200, '', {
+            return new Response(this.res, 200, '', {
                 user: {
                     ...result
                 }
-            }).send();
+            });
         } catch (err) {
-            handleRegisterError(this.res, err.errno)
+            return handleRegisterError(this.res, err.errno);
         }
     }
 }
 
-export const userGate = (req, res) => {
+export const userGate = (req, res): Boolean => {
     const id = res.locals?.id;
+
     if (!id) {
-        new ErrorResponse(res, 400).send();
         return false;
     }
 
-    if (req.query.id.toString() === id.toString() || req.body.id.toString() === id.toString()) {
+    if (req.query.id?.toString() === id.toString() || req.body.id?.toString() === id.toString()) {
         return true;
     }
-    new ErrorResponse(res, 400).send()
-    return false;
+    return false
 }

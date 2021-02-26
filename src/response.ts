@@ -17,7 +17,10 @@ export interface Res {
 export class Response {
     constructor(protected res: Res, protected code?: number, protected message?: string, protected extraProps?: { [key: string]: any }) { }
 
-    get() {
+    get(): {
+        message: string
+        [index: string]: string
+    } {
         const { message, res, code, extraProps } = this;
         if (res.locals?.token) {
             extraProps.token = res.locals.token;
@@ -28,11 +31,15 @@ export class Response {
                 message,
                 ...extraProps
             };
-        } else {
-            return {
-                message
-            };
         }
+
+        return {
+            message
+        };
+    }
+
+    statusCode(): number {
+        return this.code;
     }
 
     send() {

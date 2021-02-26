@@ -46,7 +46,7 @@
     "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
-    "npm": "^6.14.8",
+    "npm": "^7.6.0",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^9.0.0",
     "typeorm": "^0.2.25",
