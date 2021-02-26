@@ -1,7 +1,7 @@
 import *  as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
 
-import { ErrorResponse } from './response'
+import { Response, ErrorResponse } from './response'
 
 const DEFAULT_EXPIRE_TIME = 60 * 30;
 
@@ -34,11 +34,11 @@ export class Auth {
     }
 }
 
-export const authGate = async (req, res) => {
+export const authGate = async (req, res): Promise<Boolean> => {
     const auth = new Auth();
     const token = req.headers.authorization?.split('Bearer ').pop();
+
     if (!token) {
-        new ErrorResponse(res, 403).send();
         return false;
     }
 
@@ -50,10 +50,9 @@ export const authGate = async (req, res) => {
         const expiresAt = moment.unix(result.payload.exp)
         const targetAt = expiresAt.subtract(5, 'minutes');
 
-        res.locals.token = moment().isAfter(targetAt) && await auth.sign(req.query.id)
+        res.locals.token = moment().isAfter(targetAt) && await auth.sign(req.query.id);
+        return true;
     } catch (err) {
-        new ErrorResponse(res, 403).send();
         return false;
     }
-    return true;
-}
+};

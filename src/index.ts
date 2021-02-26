@@ -9,6 +9,7 @@ import { connection } from './database/connection';
 
 import { User, userGate } from './user';
 import { authGate } from './auth';
+import { ErrorResponse } from './response';
 
 const app = express();
 
@@ -16,15 +17,18 @@ app.use(bodyParser.json());
 
 
 const combinedGates = async (req, res, next) => {
-    const authed = await authGate(req, res);
+    const authed = await authGate(req, res),
+        err = new ErrorResponse(res, 403);
 
     if (!authed) {
+        err.send();
         return;
     }
 
     const isUser = await userGate(req, res);
 
     if (!isUser) {
+        err.send();
         return;
     }
     next();
@@ -42,22 +46,16 @@ app.get("/", (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    const user = new User(res, req.body);
+    const resp = await new User(res, req.body).login();
 
-    user.login();
+    return resp.send()
 });
 
-app.get('/user', combinedGates, async (req, res) => {
-    const user = new User(res, req.query)
+app.get('/user', combinedGates, async (req, res) =>
+    (await new User(res, req.query).getById()).send());
 
-    user.getById()
-});
-
-app.post('/user', (req, res) => {
-    const user = new User(res, req.body);
-
-    user.register();
-});
+app.post('/user', async (req, res) =>
+    (await new User(res, req.body).register()).send());
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
