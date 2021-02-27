@@ -1,5 +1,5 @@
-import { User as UserEntity, PartialUser } from '../database/entity/User';
-import { DefaultUserRepository } from '../database/repository/user';
+import { User as UserEntity } from '../database/entity/User';
+import { UserRepository } from '../database/repository/user';
 import { handleRegisterError } from './response';
 import { Res, Response, ErrorResponse } from '../response';
 import { Auth } from '../auth';
@@ -9,7 +9,12 @@ interface UserRequest extends UserEntity {
 }
 
 export class User {
-    constructor(private res: Res, private params: UserRequest, private auth?: Auth) {
+    constructor(
+        private res: Res,
+        private params: UserRequest,
+        private userRepository: UserRepository,
+        private auth?: Auth
+    ) {
         if (!auth) {
             this.auth = new Auth();
         }
@@ -17,11 +22,12 @@ export class User {
 
     async getById(): Promise<Response> {
         try {
-            const result = await DefaultUserRepository().getUserById(this.params.id);
+            const result = await this.userRepository.getUserById(this.params.id);
+
             if (result.length === 0) {
                 return new ErrorResponse(this.res, 400)
             }
-
+            await result[0].games;
             return new Response(this.res, 200, '', {
                 user: {
                     ...result[0]
@@ -34,7 +40,7 @@ export class User {
 
     private async verifyPassword(): Promise<Response> {
         try {
-            const result = await DefaultUserRepository().verifyPassword(this.params);
+            const result = await this.userRepository.verifyPassword(this.params);
 
             if (!result) {
                 throw new ErrorResponse(this.res, 403, 'Username or password is incorrect');
@@ -46,7 +52,7 @@ export class User {
 
     private async createToken(): Promise<Response> {
         try {
-            const user = await DefaultUserRepository().getUser(this.params);
+            const user = await this.userRepository.getUser(this.params);
             const authResult = await this.auth.sign(user.id)
             return new Response(this.res, 200, authResult.toString());
         } catch (err) {
@@ -66,7 +72,7 @@ export class User {
 
     async register(): Promise<Response> {
         try {
-            const result = await DefaultUserRepository().saveUser(this.params);
+            const result = await this.userRepository.saveUser(this.params);
 
             return new Response(this.res, 200, '', {
                 user: {

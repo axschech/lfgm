@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 
-import { EntityRepository, Repository, getCustomRepository, Code } from "typeorm";
+import { EntityRepository, Repository, getCustomRepository } from "typeorm";
 import { User, PartialUser } from '../entity/User';
 
 @EntityRepository(User)
@@ -31,7 +31,8 @@ export class UserRepository extends Repository<User> {
         return bcrpytResult ? {
             id: user.id,
             email: user.email,
-            username: user.username
+            username: user.username,
+            games: user.games
         } : false;
     }
 }

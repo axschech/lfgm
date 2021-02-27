@@ -9,7 +9,12 @@ import { connection } from './database/connection';
 
 import { User, userGate } from './user';
 import { authGate } from './auth';
+
+import { Game } from './game';
+
 import { ErrorResponse } from './response';
+import { DefaultGameRepository } from './database/repository/game';
+import { DefaultUserRepository } from './database/repository/user';
 
 const app = express();
 
@@ -46,16 +51,40 @@ app.get("/", (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    const resp = await new User(res, req.body).login();
+    const resp = await new User(
+        res,
+        req.body,
+        DefaultUserRepository()
+    ).login();
 
     return resp.send()
 });
 
 app.get('/user', combinedGates, async (req, res) =>
-    (await new User(res, req.query).getById()).send());
+    (await new User(
+        res,
+        req.query,
+        DefaultUserRepository()
+    ).getById()).send());
 
 app.post('/user', async (req, res) =>
-    (await new User(res, req.body).register()).send());
+    (await new User(
+        res,
+        req.body,
+        DefaultUserRepository()
+    ).register()).send());
+
+
+app.post('/game', combinedGates, async (req, res) => {
+    const result = await new Game(
+        res,
+        req.body,
+        DefaultGameRepository(),
+        DefaultUserRepository()
+    ).createGame();
+
+    result.send();
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

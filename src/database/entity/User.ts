@@ -1,6 +1,8 @@
 import * as bcrypt from 'bcrypt';
 
-import { BaseEntity, Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate, AfterLoad, AfterInsert, AfterUpdate, ManyToOne, OneToMany, JoinColumn } from "typeorm";
+
+import { Game } from './Game';
 
 export abstract class PartialUser {
     @PrimaryGeneratedColumn()
@@ -13,6 +15,12 @@ export abstract class PartialUser {
         unique: true
     })
     email: string;
+
+    @OneToMany(type => Game, game => game.creator, {
+        eager: true
+    })
+    @JoinColumn()
+    games: Game[]
 }
 
 @Entity()
