@@ -1,8 +1,9 @@
 import { createConnection, Connection } from "typeorm";
 import { User } from './entity/User';
+import { Game } from './entity/Game';
 
 export const connection = createConnection({
-    entities: [User],
+    entities: [User, Game],
     type: "mysql",
     synchronize: true,
     logging: true,
