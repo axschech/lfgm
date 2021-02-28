@@ -5,8 +5,13 @@ import { User, PartialUser } from '../entity/User';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-    getUserById(id: number) {
-        return this.findByIds([id]);
+    getUserById(id: number, full?: boolean) {
+        const options: { relations?: string[] } = {};
+
+        if (full) {
+            options.relations = ['created_games']
+        }
+        return this.findByIds([id], { ...options });
     }
 
     getUser(user: PartialUser) {
@@ -32,7 +37,7 @@ export class UserRepository extends Repository<User> {
             id: user.id,
             email: user.email,
             username: user.username,
-            games: user.games
+            created_games: user.created_games
         } : false;
     }
 }

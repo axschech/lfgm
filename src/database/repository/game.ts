@@ -16,6 +16,10 @@ export class GameRepository extends Repository<Game> {
 
         return this.save(gameEntity);
     }
+
+    async getGamesByUser(user: User): Promise<Game[]> {
+        return this.find({ where: { creator: user } });
+    }
 }
 
 export const DefaultGameRepository = () => getCustomRepository(GameRepository);

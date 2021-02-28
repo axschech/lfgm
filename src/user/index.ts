@@ -27,7 +27,7 @@ export class User {
             if (result.length === 0) {
                 return new ErrorResponse(this.res, 400)
             }
-            await result[0].games;
+            await result[0].created_games;
             return new Response(this.res, 200, '', {
                 user: {
                     ...result[0]
@@ -92,7 +92,9 @@ export const userGate = (req, res): Boolean => {
         return false;
     }
 
-    if (req.query.id?.toString() === id.toString() || req.body.id?.toString() === id.toString()) {
+    if (req.params.id?.toString() === id.toString() ||
+        req.query.id?.toString() === id.toString() ||
+        req.body.id?.toString() === id.toString()) {
         return true;
     }
     return false

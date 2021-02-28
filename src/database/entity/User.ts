@@ -16,11 +16,9 @@ export abstract class PartialUser {
     })
     email: string;
 
-    @OneToMany(type => Game, game => game.creator, {
-        eager: true
-    })
+    @OneToMany(type => Game, game => game.creator)
     @JoinColumn()
-    games: Game[]
+    created_games: Game[]
 }
 
 @Entity()
