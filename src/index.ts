@@ -60,12 +60,19 @@ app.post('/login', async (req, res) => {
     return resp.send()
 });
 
-app.get('/user', combinedGates, async (req, res) =>
+app.get('/user/:id', combinedGates, async (req, res) =>
     (await new User(
         res,
-        req.query,
+        req.params,
         DefaultUserRepository()
     ).getById()).send());
+
+app.get('/user/:id/games', combinedGates, async (req, res) =>
+    (await new Game(
+        res,
+        req.params,
+        DefaultGameRepository()
+    ).getGameByUser()).send())
 
 app.post('/user', async (req, res) =>
     (await new User(
@@ -79,8 +86,7 @@ app.post('/game', combinedGates, async (req, res) => {
     const result = await new Game(
         res,
         req.body,
-        DefaultGameRepository(),
-        DefaultUserRepository()
+        DefaultGameRepository()
     ).createGame();
 
     result.send();
