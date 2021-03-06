@@ -15,6 +15,7 @@ import { Game } from './game';
 import { ErrorResponse } from './response';
 import { DefaultGameRepository } from './database/repository/game';
 import { DefaultUserRepository } from './database/repository/user';
+import { Player } from './player';
 
 const app = express();
 
@@ -72,7 +73,7 @@ app.get('/user/:id/games', combinedGates, async (req, res) =>
         res,
         req.params,
         DefaultGameRepository()
-    ).getGameByUser()).send())
+    ).getGamesByUser()).send())
 
 app.post('/user', async (req, res) =>
     (await new User(
@@ -90,6 +91,10 @@ app.post('/game', combinedGates, async (req, res) => {
     ).createGame();
 
     result.send();
+})
+
+app.post('/game/id/players', combinedGates, async (req, res) => {
+    const result = await new Player()
 })
 
 const PORT = process.env.PORT || 3000;

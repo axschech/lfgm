@@ -3,13 +3,13 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { User } from './User';
 
 @Entity()
-export class Game {
+export class Player {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    title: string;
+    user_id: number;
 
-    @ManyToOne(type => User)
-    creator: User;
+    @Column()
+    game_id: number
 }

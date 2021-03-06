@@ -5,7 +5,7 @@ import { User, PartialUser } from '../entity/User';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-    getUserById(id: number, full?: boolean) {
+    getById(id: number, full?: boolean) {
         const options: { relations?: string[] } = {};
 
         if (full) {
@@ -18,7 +18,7 @@ export class UserRepository extends Repository<User> {
         return this.findOne({ email: user.email });
     }
 
-    saveUser(user: PartialUser) {
+    upsert(user: PartialUser) {
         const entity = Object.assign(new User(), user);
 
         return this.save(entity);
@@ -42,4 +42,4 @@ export class UserRepository extends Repository<User> {
     }
 }
 
-export const DefaultUserRepository = () => getCustomRepository(UserRepository);
+export const DefaultUserRepository = () => new UserRepository();

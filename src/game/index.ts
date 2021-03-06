@@ -12,7 +12,7 @@ export class Game {
     ) { }
 
     async createGame(): Promise<Response> {
-        const game = await this.gameRepository.saveGame(this.params);
+        const game = await this.gameRepository.create(this.params);
         if (!game) {
             return new ErrorResponse(this.res);
         }
@@ -20,7 +20,7 @@ export class Game {
         return new Response(this.res, 200, '', game);
     }
 
-    async getGameByUser(): Promise<Response> {
+    async getGamesByUser(): Promise<Response> {
         const user = Object.assign(new User(), { id: this.params.id })
         const result = await this.gameRepository.getGamesByUser(user);
 
