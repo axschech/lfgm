@@ -58,9 +58,19 @@ export class ErrorResponse extends Response {
         }
 
         if (!message) {
-            this.message = this.defaultErrorMessage;
+            switch (code) {
+                case StatusCodes.USER_ERROR:
+                case StatusCodes.UNAUTHORIZED:
+                    this.message = "Not allowed";
+                    break;
+                case StatusCodes.NOT_FOUND:
+                    this.message = "Resource not found";
+                    break;
+                default:
+                    this.message = this.defaultErrorMessage;
+                    break;
+            }
         }
 
     }
 }
-

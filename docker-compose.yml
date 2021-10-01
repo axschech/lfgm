@@ -7,7 +7,7 @@ services:
       - MYSQL_DATABASE
       - MYSQL_USER
       - MYSQL_PASSWORD
-    image: mysql:5.7
+    image: mariadb:latest
     ports:
       - "3306:3306"
     expose:

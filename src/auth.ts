@@ -1,7 +1,5 @@
 import *  as jwt from 'jsonwebtoken';
-import * as moment from 'moment';
-
-import { Response, ErrorResponse } from './response'
+import { fromUnixTime, sub, isAfter } from 'date-fns';
 
 const DEFAULT_EXPIRE_TIME = 60 * 30;
 
@@ -47,10 +45,12 @@ export const authGate = async (req, res): Promise<Boolean> => {
 
         res.locals.id = result.payload.id;
 
-        const expiresAt = moment.unix(result.payload.exp)
-        const targetAt = expiresAt.subtract(5, 'minutes');
+        const expiresAt = fromUnixTime(result.payload.exp)
+        const targetAt = sub(expiresAt, {
+            minutes: 5
+        });
 
-        res.locals.token = moment().isAfter(targetAt) && await auth.sign(req.query.id);
+        res.locals.token = isAfter(new Date(), targetAt) && await auth.sign(req.query.id);
         return true;
     } catch (err) {
         return false;
