@@ -1,3 +1,5 @@
+build: 
+	docker-compose build
 up:
 	docker-compose up -d ${service}
 
@@ -9,3 +11,5 @@ dev:
 
 db:
 	docker-compose exec db mysql -u root -p lfgm
+logs:
+	@docker-compose logs -f
