@@ -19,5 +19,4 @@ app.get('/user/:id', async (req: {
 
 app.listen(9001, () => {
     schema();
-    console.log('am in');
 });
