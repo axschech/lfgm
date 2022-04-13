@@ -1,9 +1,12 @@
+import { E } from '../response';
 import { USERTABLE } from '../schema';
 import { Game } from './game';
 import { KnexWrapper, Model } from './model';
 
+import * as bcrypt from 'bcrypt';
+
 export interface User {
-  id: number;
+  id?: number;
   username: string;
   email: string;
   password?: string;
@@ -22,6 +25,15 @@ export class UserModel implements Model<User> {
 
   async get(where: object): Promise<User> {
     return await this.knexWrapper.select(where)
+  }
+
+  async insert(user: User): Promise<User | E> {
+    const password = bcrypt.hashSync(user.password, 10);
+    
+    return await this.knexWrapper.insert({
+      ...user,
+      password
+    } as User, ['*'])
   }
 }
 
