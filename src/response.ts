@@ -6,6 +6,10 @@ export enum StatusCodes {
     NOT_FOUND = 404
 }
 
+export type E = {
+    error: string
+}
+
 export interface Res {
     status: (arg0: number) => void;
     json: ({ }) => void;

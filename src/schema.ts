@@ -11,10 +11,11 @@ export default async () => {
     if (!usersExists) {
         try {
             await knexSchema.createTable('users', function (table) {
-                table.increments();
-                table.string("username");
-                table.string("email");
-                table.string("password");
+                table.increments().primary();
+                table.string("username").checkLength('>', 0).notNullable().unique();
+                table.string("email").notNullable().unique();
+                table.string("password").notNullable();
+                table.unique(['email', 'password']);
             })
         } catch (e) {
             console.error("failed to create user table");

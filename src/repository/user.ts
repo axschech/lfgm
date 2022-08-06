@@ -1,5 +1,5 @@
 import { User, UserModel } from '../model/user';
-import { ErrorResponse, Res, Response, StatusCodes } from '../response';
+import { ErrorResponse, Res, Response, StatusCodes, E } from '../response';
 import { Repository } from './repository';
 
 export class UserRepository implements Repository<User> {
@@ -10,7 +10,7 @@ export class UserRepository implements Repository<User> {
         this.res = res;
     }
 
-    private returnResponse(userResult: User) {
+    private returnResponse(userResult?: User) {
         if (!userResult) {
             return new ErrorResponse(this.res, StatusCodes.NOT_FOUND);
         }
@@ -30,6 +30,15 @@ export class UserRepository implements Repository<User> {
                 process.exit(1);
                 break;
         }
+    }
+
+    async registerUser(user: User): Promise<Response> {
+        const result = await this.model.insert(user);
+
+        if ("error" in result) {
+            return new ErrorResponse(this.res, 400, "Bad Request")
+        }
+        return this.returnResponse(result)
     }
 }
 
