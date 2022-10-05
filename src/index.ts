@@ -35,6 +35,6 @@ app.post('/user', async (req: {
     user.send();
 })
 
-app.listen(9001, () => {
-    schema();
+app.listen(9001, async () => {
+    console.log(await schema());
 });

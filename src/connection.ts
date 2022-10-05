@@ -1,5 +1,5 @@
 import Knex from "knex";
-console.log(process.env.MYSQL_USER)
+
 export const knex = Knex({
   client: 'mysql',
   connection: {
