@@ -1,3 +1,4 @@
+import { KnexWrapper, Model } from "./model";
 import { User } from "./user";
 
 export interface Game {
@@ -6,3 +7,9 @@ export interface Game {
     description: string;
     Users: User[];
 }
+
+// export class GameModel implements Model<Game> {
+//     knexWrapper: KnexWrapper<Game>;
+
+
+// }

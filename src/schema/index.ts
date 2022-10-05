@@ -1,6 +1,11 @@
-import { knex } from './connection'
+import { knex } from '../connection'
 
 export const USERTABLE = 'users';
+
+export interface Schema {
+    check: (tableName: string) => boolean;
+    create: () => Promise<void>
+}
 
 export default async () => {
     console.log(process.env.MYSQL_DATABASE)
@@ -17,6 +22,7 @@ export default async () => {
                 table.string("password").notNullable();
                 table.unique(['email', 'password']);
             })
+            
         } catch (e) {
             console.error("failed to create user table");
             process.exit(1)
