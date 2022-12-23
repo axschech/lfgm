@@ -45,7 +45,7 @@
     "eslint-plugin-import": "^2.22.0",
     "express": "^4.17.1",
     "install": "^0.13.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "knex": "^1.0.7",
     "moment": "^2.29.2",
     "mysql": "^2.18.1",
